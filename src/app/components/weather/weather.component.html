@@ -1,0 +1,168 @@
+<div class="main-container">
+    <div>
+        <div class="header">
+            <span>
+                MY WEATHER
+            </span>
+            <input [(ngModel)]="searchLocation" (keyup.enter)="searchWeather()" placeholder="Your location">
+        </div>
+
+        <!-- weather.component.html -->
+        <div class="navbar">
+            <button *ngFor="let item of navbarItems; let i = index" (click)="setActive(i)"
+                [class.active]="activeIndex === i">
+                {{ item }}
+            </button>
+        </div>
+    </div>
+    <ng-container *ngIf="errorOccurred; else weatherContent">
+        <ng-container *ngTemplateOutlet="errorImage"></ng-container>
+    </ng-container>
+    <ng-template #weatherContent>
+
+        <div class="content" *ngIf="dailyWeather">
+
+
+            <ng-container *ngIf="activeIndex === 0 ">
+                <!-- Content for Today -->
+                <div *ngIf="dailyWeather; else loading">
+                    <div class="current-weather-block">
+                        <div class="current-date-header">
+                            <span style="font-size: 20px;">CURRENT WEATHER</span>
+                            <span>{{currentDate}}</span>
+                        </div>
+                        <div class="current-weather-data">
+                            <div style="display: flex; flex-direction: column; align-items: center;">
+                                <div class="weather-icon-container">
+                                    <img [src]="'http://openweathermap.org/img/wn/' + dailyWeather.weather[0].icon + '.png'"
+                                        alt="weather-icon" class="weather-icon">
+                                </div>
+                                <span class="weather-text">{{dailyWeather.weather[0].main}}</span>
+                            </div>
+
+                            <div
+                                style="display: flex; flex-direction: column; align-items: center; justify-content: center;">
+                                <span style="font-size: 30px;">{{ dailyWeather.main.temp }} °C</span>
+                                <span style="font-size: 12px; margin-top: 5px;">Real feel {{
+                                    dailyWeather.main.feels_like }}
+                                    °C</span>
+                            </div>
+                            <div class="information-container">
+                                <span>Sunrise: {{ dailyWeather.sys.sunrise | date:'hh:mm':'UTC'}} </span>
+                                <span>Sunset: {{ dailyWeather.sys.sunset | date:'hh:mm':'UTC'}}</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="dailyWeather; else loading">
+                    <div class="current-weather-block">
+                        <div class="current-date-header">
+                            <span style="font-size: 20px;">HOURLY</span>
+                        </div>
+                        <ng-container *ngTemplateOutlet="currentWeatherTable"></ng-container>
+                    </div>
+                </div>
+            </ng-container>
+
+            <ng-container *ngIf="activeIndex === 1">
+                <!-- Content for 5-day forecast -->
+
+                <div class="weather-forecast">
+                    <div *ngFor="let day of weekWeather" class="weather-day" [class.active]="day === selectedDay"
+                        (click)="selectDay(day)">
+                        <div class="day">{{ day.dayOfWeek }}</div>
+                        <div class="date">{{ day.date }}</div>
+                        <div class="icon">
+                            <img [src]="'http://openweathermap.org/img/wn/' + day.icon + '.png'"
+                                alt="{{ day.forecast }}" />
+                        </div>
+                        <div class="temperature">{{ day.temp }}</div>
+                        <div class="forecast">{{ day.forecast }}</div>
+                    </div>
+                </div>
+                <div>
+
+                    <div *ngIf="selectedDayWeather; else currentWeatherTable">
+                        <table>
+                            <thead>
+                                <tr>
+                                    <th>Time</th>
+                                    <th *ngFor="let hour of wHours">{{ hour }}</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                <tr>
+                                    <td></td>
+                                    <td *ngFor="let icon of wIcons"><img
+                                            [src]="'http://openweathermap.org/img/wn/' + icon + '.png'" alt="icon"></td>
+                                </tr>
+                                <tr>
+                                    <td>Forecast</td>
+                                    <td *ngFor="let forecast of wForecasts">{{ forecast }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Temp</td>
+                                    <td *ngFor="let temp of wTemps">{{ temp }}</td>
+                                </tr>
+                                <tr>
+                                    <td>RealFeel</td>
+                                    <td *ngFor="let realFeel of wRealFeels">{{ realFeel }}</td>
+                                </tr>
+                                <tr>
+                                    <td>Wind</td>
+                                    <td *ngFor="let wind of wWinds">{{ wind }}</td>
+                                </tr>
+                            </tbody>
+                        </table>
+                    </div>
+                </div>
+            </ng-container>
+        </div>
+    </ng-template>
+
+</div>
+
+
+<ng-template #loading>
+    <p>Loading...</p>
+</ng-template>
+<ng-template #currentWeatherTable>
+    <div class="weather-table" *ngIf="hourlyWeather">
+        <table>
+            <thead>
+                <tr>
+                    <th>Today</th>
+                    <th *ngFor="let hour of hours">{{ hour }}</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td></td>
+                    <td *ngFor="let icon of icons"><img [src]="'http://openweathermap.org/img/wn/' + icon + '.png'"
+                            alt="icon">
+                    </td>
+                </tr>
+                <tr>
+                    <td>Forecast</td>
+                    <td *ngFor="let forecast of forecasts">{{ forecast }}</td>
+                </tr>
+                <tr>
+                    <td>Temp</td>
+                    <td *ngFor="let temp of temps">{{ temp }}</td>
+                </tr>
+                <tr>
+                    <td>RealFeel</td>
+                    <td *ngFor="let realFeel of realFeels">{{ realFeel }}</td>
+                </tr>
+                <tr>
+                    <td>Wind</td>
+                    <td *ngFor="let wind of winds">{{ wind }}</td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+</ng-template>
+
+<ng-template #errorImage>
+    <img src="../../../assets/404/404.jpeg" alt="404" class="error-image">
+</ng-template>
