@@ -24,6 +24,7 @@ export class WeatherComponent implements OnInit {
   activeIndex!: number;
   currentDate: string = '';
   searchLocation: string = '';
+  searchedLocation: string = 'London';
 
   hours: string[] = [];
   forecasts: string[] = [];
@@ -77,6 +78,7 @@ export class WeatherComponent implements OnInit {
   searchWeather() {
     if (this.searchLocation.trim() !== '') {
       this.getWeather(this.searchLocation);
+      this.searchedLocation = this.searchLocation;
     }
     console.log(this.errorOccurred);
   }
